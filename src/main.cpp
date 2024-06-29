@@ -11,10 +11,12 @@ int main() {
   
   std::string input;
   std::getline(std::cin, input);
+  std::cout << input << ": command not found\n" << "$ ";
   
-
-  std::cout << input << ": command not found\n";
-
+  while (std::getline(std::cin, input)){
+    std::cout << input << ": command not found\n";
+    std::cout << "$ ";
+  }
 
 
 }
