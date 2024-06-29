@@ -11,12 +11,19 @@ int main() {
   
   std::string input;
 
-  while (std::getline(std::cin, input) && input != "exit 0"){
-    std::cout << input << ": command not found\n";
-    std::cout << "$ ";
-
+  while (std::getline(std::cin, input) && input != "exit 0")
+  {
+      
+    if (input.find("echo") != std::string::npos){
+        std::cout << input.substr(5, input.size() - 1) << std::endl;
+        std::cout << "$ ";
+    }
+    
+    else{
+        std::cout << input << ": command not found\n";
+        std::cout << "$ ";
+    }
     
   }
 
 }
-
