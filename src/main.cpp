@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <sstream>
 #include <cstdio>
+#include <filesystem>
+#include <iostream>
 
 // Handles echo command
 void Echo(const std::string& input) {
@@ -27,7 +29,7 @@ bool isexecutable(const char* p) {
 
 // Command is a shell builtin
 bool shellbuiltin(const std::string& command) {
-    return (command == "echo" || command == "type" || command == "exit");
+    return (command == "echo" || command == "type" || command == "exit" || command == "pwd");
 }
 
 std::vector<std::string> seperateDirectories(const char* p){
@@ -53,7 +55,7 @@ std::string findexecutable(const std::string& input) {
         if (isexecutable(filepath.c_str())) {
             return filepath;
         }
-    } 
+    }
 
     return "";
 }
@@ -100,6 +102,11 @@ void UnknownCommand(const std::string& input) {
     
 }
 
+void pwd() {
+    std::filesystem::path curpath = std::filesystem::current_path();
+    std::cout << curpath.string() << std::endl << "$ ";
+}
+
 // Main function
 int main() {
     std::cout << std::unitbuf;
@@ -114,8 +121,9 @@ int main() {
             Echo(input);
         } else if (input.substr(0, 4) == "type") {
             Type(input);
-        } 
-
+        } else if (input.substr(0, 3) == "pwd") {
+            pwd();
+        }
         else {
             UnknownCommand(input);
         }
@@ -123,3 +131,4 @@ int main() {
 
     return 0;
 }
+
