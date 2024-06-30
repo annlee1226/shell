@@ -102,6 +102,18 @@ void UnknownCommand(const std::string& input) {
     
 }
 
+void cd(const std::string& input) {
+    std::string command = input.substr(3);
+    std::filesystem::path newpath = command;
+        if (std::filesystem::exists(newpath) && std::filesystem::is_directory(newpath) ) {  
+            //sets path
+            std::filesystem::current_path(newpath);
+        } else {
+            std::cout << "cd: "<< command << ": No such file or directory" << std::endl;
+    }
+    std::cout << "$ ";
+}
+
 void pwd() {
     std::filesystem::path curpath = std::filesystem::current_path();
     std::cout << curpath.string() << std::endl << "$ ";
@@ -123,6 +135,8 @@ int main() {
             Type(input);
         } else if (input.substr(0, 3) == "pwd") {
             pwd();
+        } else if (input.substr(0, 2) == "cd") {
+            cd(input);
         }
         else {
             UnknownCommand(input);
