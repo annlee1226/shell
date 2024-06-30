@@ -3,13 +3,14 @@
 #include <vector>
 #include <unistd.h>
 #include <sstream>
+#include <cstdio>
 
 // Handles echo command
 void Echo(const std::string& input) {
     if (input.length() == 4) {
         std::cout << std::endl;
     } else {
-        std::cout << input.substr(5) << std::endl;
+        std::cout << input.substr(5, input.size()) << std::endl;
     }
     std::cout << "$ ";
 }
@@ -57,13 +58,16 @@ std::string findexecutable(const std::string& input) {
     return "";
 }
 
+
+
+
 // Handles type command
 void Type(const std::string& input) {
     std::string command = input.substr(5);
 
     if (shellbuiltin(command)) {
         std::cout << command << " is a shell builtin";
-    } 
+    }
     else {
         std::string path = findexecutable(command);
         if (!path.empty()) {
@@ -78,11 +82,23 @@ void Type(const std::string& input) {
 
 // Handles unknown commands
 void UnknownCommand(const std::string& input) {
-    std::cout << input << ": command not found\n";
+    char buffer[1024];
+    std::string newinput = input.substr(0, input.find(' '));
+    std::string path = findexecutable(newinput);
+    if (!path.empty()) {
+        FILE* pipe = popen((path + input.substr(newinput.length())).c_str(), "r");
+        while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+            std::cout << buffer;
+        }
+
+        pclose(pipe);
+    } 
+    else {
+        std::cout << input << ": command not found\n";
+    }
     std::cout << "$ ";
+    
 }
-
-
 
 // Main function
 int main() {
@@ -98,7 +114,9 @@ int main() {
             Echo(input);
         } else if (input.substr(0, 4) == "type") {
             Type(input);
-        } else {
+        } 
+
+        else {
             UnknownCommand(input);
         }
     }
