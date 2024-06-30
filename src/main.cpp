@@ -8,7 +8,7 @@
 #include <iostream>
 
 // Handles echo command
-void Echo(const std::string& input) {
+void get_Echo(const std::string& input) {
     if (input.length() == 4) {
         std::cout << std::endl;
     } else {
@@ -64,7 +64,7 @@ std::string findexecutable(const std::string& input) {
 
 
 // Handles type command
-void Type(const std::string& input) {
+void get_Type(const std::string& input) {
     std::string command = input.substr(5);
 
     if (shellbuiltin(command)) {
@@ -102,19 +102,25 @@ void UnknownCommand(const std::string& input) {
     
 }
 
-void cd(const std::string& input) {
+void get_cd(const std::string& input) {
     std::string command = input.substr(3);
     std::filesystem::path newpath = command;
         if (std::filesystem::exists(newpath) && std::filesystem::is_directory(newpath) ) {  
             //sets path
             std::filesystem::current_path(newpath);
-        } else {
+        } 
+        else if (command == "~") {
+            char* home = getenv("HOME");
+            std::filesystem::path homepath = std::string(home);
+            std::filesystem::current_path(homepath);
+        }
+        else {
             std::cout << "cd: "<< command << ": No such file or directory" << std::endl;
     }
     std::cout << "$ ";
 }
 
-void pwd() {
+void get_pwd() {
     std::filesystem::path curpath = std::filesystem::current_path();
     std::cout << curpath.string() << std::endl << "$ ";
 }
@@ -130,13 +136,13 @@ int main() {
 
     while (std::getline(std::cin, input) && input != "exit 0") {
         if (input.substr(0, 4) == "echo") {
-            Echo(input);
+            get_Echo(input);
         } else if (input.substr(0, 4) == "type") {
-            Type(input);
+            get_Type(input);
         } else if (input.substr(0, 3) == "pwd") {
-            pwd();
+            get_pwd();
         } else if (input.substr(0, 2) == "cd") {
-            cd(input);
+            get_cd(input);
         }
         else {
             UnknownCommand(input);
